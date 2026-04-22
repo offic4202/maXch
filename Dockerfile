@@ -1,20 +1,19 @@
-# 1. Install pnpm
-FROM node:20-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# 1. Install Bun
+FROM oven/bun:1-alpine AS base
 
 # 2. Install dependencies
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+COPY package.json bun.lock ./
 COPY prisma ./prisma/
-RUN pnpm install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # 3. Generate Prisma client
 FROM base AS prisma-generator
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY prisma ./prisma/
-RUN npx prisma generate
+RUN bunx prisma generate
 
 # 4. Build application
 FROM base AS builder
@@ -22,7 +21,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=prisma-generator /app/node_modules/.prisma ./node_modules/.prisma
 COPY . .
-RUN pnpm build
+RUN bun run build
 
 # 5. Production image
 FROM base AS runner

@@ -8,29 +8,27 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/mazematch
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/maxch
     depends_on:
       - postgres
     networks:
-      - maze-network
+      - maxch-network
 
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=mazematch
+      - POSTGRES_PASSWORD=your_secure_password
+      - POSTGRES_DB=maxch
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
-      - maze-network
+      - maxch-network
 
 volumes:
   postgres_data:
 
 networks:
-  maze-network:
+  maxch-network:
     driver: bridge
