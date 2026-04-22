@@ -82,7 +82,7 @@ export default function ProfilesPage() {
                 </div>
                 <div className="p-4 border-t border-white/5">
                   <div className="flex flex-wrap gap-2">
-                    {profile.interests.slice(0, 3).map((interest) => (
+                    {profile.interests.slice(0, 3).map((interest: string) => (
                       <span key={interest} className="text-xs px-2 py-1 bg-white/5 rounded-full text-[#A3A3A3]">
                         {interest}
                       </span>

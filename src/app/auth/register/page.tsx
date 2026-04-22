@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { registerUser, createProfile } from '@/lib/store';
+import { registerUser, createProfile, login } from '@/lib/store';
 import { useAuth } from '@/lib/auth-context';
 import { NIGERIAN_STATES, INTERESTS, ID_TYPES, UserRole, ROLE_LABELS } from '@/lib/types';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { login, refreshProfile } = useAuth();
+  const { login: authLogin } = useAuth();
   const [step, setStep] = useState(1);
   
   const [email, setEmail] = useState('');
@@ -34,7 +34,7 @@ export default function RegisterPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [lookingFor, setLookingFor] = useState<'marriage' | 'dating' | 'networking'>('marriage');
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -48,7 +48,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const user = registerUser(email, password, selectedRole);
+    const user = await registerUser(email, password, selectedRole);
     if (user) {
       login(email, password);
     } else {
@@ -57,17 +57,17 @@ export default function RegisterPage() {
     }
   };
 
-  const handleCreateProfile = (e: React.FormEvent) => {
+  const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const user = registerUser(email, password, selectedRole);
+    const user = await registerUser(email, password, selectedRole);
     if (!user) {
       setError('Email already registered');
       return;
     }
 
-    const profile = createProfile({
+    const profile = await createProfile({
       userId: user.id,
       name,
       dateOfBirth,
@@ -87,7 +87,6 @@ export default function RegisterPage() {
     });
 
     login(email, password);
-    refreshProfile();
     router.push('/auth/register-success');
   };
 
